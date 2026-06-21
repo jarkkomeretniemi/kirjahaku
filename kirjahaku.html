@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kirjahaku — yksi haku, kaikki antikvariaatit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spectral:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#d7d8cc;        /* sage-grey desk */
+    --card:#eceae0;         /* pale slip */
+    --card-edge:#c5c4b5;
+    --ink:#221f1a;          /* near-black brown ink */
+    --ink-soft:#5a554c;
+    --rule:#b7b6a8;         /* hairline */
+    --stamp:#93372e;        /* oxblood library stamp */
+    --stamp-soft:#b9685f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Spectral",Georgia,serif;
+    font-size:17px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(20px,5vw,64px) clamp(16px,5vw,32px) 80px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+
+  /* ---- header / signature stamp ---- */
+  header{position:relative;margin-bottom:36px}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink-soft);margin:0 0 10px;
+  }
+  h1{
+    font-family:"Fraunces",serif;
+    font-weight:900;font-size:clamp(34px,8vw,56px);
+    line-height:1.02;letter-spacing:-.01em;margin:0;max-width:14ch;
+  }
+  .lede{margin:14px 0 0;max-width:48ch;color:var(--ink-soft);font-size:16px}
+  .stamp{
+    position:absolute;top:-6px;right:-4px;
+    border:2.5px solid var(--stamp);color:var(--stamp);
+    border-radius:8px;padding:8px 12px;text-align:center;
+    transform:rotate(7deg);opacity:.8;
+    font-family:"IBM Plex Mono",monospace;
+  }
+  .stamp b{display:block;font-size:13px;letter-spacing:.18em;font-weight:500}
+  .stamp small{display:block;font-size:9px;letter-spacing:.14em;margin-top:2px}
+  @media(max-width:560px){.stamp{display:none}}
+
+  /* ---- search slip ---- */
+  .slip{
+    background:var(--card);border:1px solid var(--card-edge);
+    border-radius:4px;padding:18px;margin:0 0 8px;
+    box-shadow:0 1px 0 #fff inset, 0 10px 24px -18px rgba(0,0,0,.5);
+  }
+  .slip label{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);
+    display:block;margin-bottom:8px;
+  }
+  .field{display:flex;gap:10px;flex-wrap:wrap}
+  #q{
+    flex:1 1 240px;min-width:0;
+    font-family:"Spectral",serif;font-size:20px;color:var(--ink);
+    background:transparent;border:none;border-bottom:2px solid var(--ink);
+    padding:6px 2px;outline:none;
+  }
+  #q::placeholder{color:#9b988d}
+  #q:focus{border-bottom-color:var(--stamp)}
+  .go{
+    font-family:"IBM Plex Mono",monospace;font-size:14px;letter-spacing:.12em;
+    text-transform:uppercase;background:var(--ink);color:var(--paper);
+    border:none;border-radius:3px;padding:10px 20px;cursor:pointer;
+    transition:background .15s;
+  }
+  .go:hover{background:var(--stamp)}
+  .go:focus-visible{outline:3px solid var(--stamp-soft);outline-offset:2px}
+
+  .hint{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft);
+    margin:10px 2px 26px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+  }
+  .hint button{
+    font:inherit;color:var(--stamp);background:none;border:none;cursor:pointer;
+    padding:0;text-decoration:underline;text-underline-offset:3px;
+  }
+
+  /* ---- catalogue cards ---- */
+  .cards{display:grid;gap:12px}
+  .card{
+    display:flex;align-items:center;gap:14px;
+    background:var(--card);border:1px solid var(--card-edge);border-radius:4px;
+    padding:14px 16px;text-decoration:none;color:inherit;
+    transition:transform .12s, box-shadow .12s, border-color .12s;
+    position:relative;
+  }
+  .card[aria-disabled="true"]{opacity:.45;pointer-events:none}
+  .card:hover{transform:translateY(-2px);border-color:var(--ink);
+    box-shadow:0 10px 22px -16px rgba(0,0,0,.7)}
+  .card:focus-visible{outline:3px solid var(--stamp-soft);outline-offset:2px}
+  .chk{flex:0 0 auto;width:18px;height:18px;accent-color:var(--stamp);cursor:pointer}
+  .meta{flex:1 1 auto;min-width:0}
+  .name{font-family:"Fraunces",serif;font-weight:600;font-size:19px;line-height:1.1}
+  .desc{font-size:13.5px;color:var(--ink-soft);margin-top:2px}
+  .tag{
+    flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:99px;
+    border:1px solid var(--rule);color:var(--ink-soft);white-space:nowrap;
+  }
+  .tag.paste{border-color:var(--stamp-soft);color:var(--stamp)}
+  .arrow{flex:0 0 auto;font-family:"IBM Plex Mono",monospace;color:var(--ink-soft)}
+
+  footer{
+    margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);
+    line-height:1.7;
+  }
+  footer b{color:var(--ink);font-weight:500}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="stamp"><b>KIRJAHAKU</b><small>YKSI SLIPPI</small></div>
+    <p class="eyebrow">suomenkielinen kirja · neljä hyllyä · yksi haku</p>
+    <h1>Etsi kerran. Avaa joka antikvariaatti.</h1>
+    <p class="lede">Kirjoita nimeke tai tekijä, paina hae — ja avaa haku suoraan jokaisen kaupan omasta hausta. Osto tapahtuu sen kaupan omassa kassassa.</p>
+  </header>
+
+  <div class="slip">
+    <label for="q">Hakusana — nimeke tai tekijä</label>
+    <div class="field">
+      <input id="q" type="text" autocomplete="off" placeholder="esim. Tove Jansson, Sinuhe egyptiläinen…">
+      <button class="go" id="go">Hae →</button>
+    </div>
+  </div>
+
+  <div class="hint">
+    <span id="status">Valitse rivit, joihin haku osuu.</span>
+    <button id="copy" type="button">Kopioi hakusana</button>
+    <button id="openAll" type="button">Avaa valitut uusiin välilehtiin</button>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <footer>
+    <b>Suorat haut</b> (Antikka.net, Finlandia Kirja) avautuvat valmiiksi tuloksiin.<br>
+    <b>Liitä-rivit</b> (Antikvaari.fi, Antikvariaatti.net) avaavat haun — hakusana on leikepöydällä, paina Ctrl/⌘+V.<br>
+    Muokkaa lähteitä tai lisää omia: avaa tiedosto editorissa ja muokkaa <b>SOURCES</b>-listaa.
+  </footer>
+</div>
+
+<script>
+/* ----------------------------------------------------------------
+   LÄHTEET — muokkaa vapaasti.
+   mode:"deep"  → suora hakulinkki, %s korvataan hakusanalla
+   mode:"paste" → avaa haun; hakusana kopioidaan leikepöydälle
+   ---------------------------------------------------------------- */
+const SOURCES = [
+  { id:"antikvaari",     name:"Antikvaari.fi",      desc:"~100 antikvariaattia · yli miljoona nimekettä",
+    mode:"paste", url:"https://www.antikvaari.fi/hakukone" },
+  { id:"antikka",        name:"Antikka.net",        desc:"Kauppiaiden yhteinen · 260 000+ kirjaa",
+    mode:"deep",  url:"https://antikka.net/?post_type=product&s=%s" },
+  { id:"finlandia",      name:"Finlandia Kirja",    desc:"Pohjoismaiden suurin antikvariaatti",
+    mode:"deep",  url:"https://www.finlandiakirja.fi/fi/catalogsearch/result/?q=%s" },
+  { id:"antikvariaatti", name:"Antikvariaatti.net", desc:"Keräilijöiden kohtaamispaikka",
+    mode:"paste", url:"https://www.antikvariaatti.net/" },
+];
+
+const cardsEl  = document.getElementById("cards");
+const qEl      = document.getElementById("q");
+const statusEl = document.getElementById("status");
+
+function href(src, q){
+  return src.mode === "deep" ? src.url.replace("%s", encodeURIComponent(q)) : src.url;
+}
+function copy(q){
+  if(!q) return;
+  try { navigator.clipboard && navigator.clipboard.writeText(q); } catch(e){}
+}
+
+// build cards once
+SOURCES.forEach(src=>{
+  const a = document.createElement("a");
+  a.className = "card";
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.dataset.id = src.id;
+  a.setAttribute("aria-disabled","true");
+  a.innerHTML =
+    `<input class="chk" type="checkbox" checked aria-label="Sisällytä: ${src.name}">
+     <span class="meta">
+       <span class="name">${src.name}</span>
+       <span class="desc">${src.desc}</span>
+     </span>
+     <span class="tag ${src.mode}">${src.mode==="deep"?"suora haku":"liitä hakusana"}</span>
+     <span class="arrow">↗</span>`;
+  // checkbox shouldn't trigger navigation
+  a.querySelector(".chk").addEventListener("click", e=> e.stopPropagation());
+  // paste-mode: copy term when opening
+  a.addEventListener("click", ()=>{ if(src.mode==="paste") copy(qEl.value.trim()); });
+  cardsEl.appendChild(a);
+  src._el = a;
+});
+
+function refresh(){
+  const q = qEl.value.trim();
+  SOURCES.forEach(src=>{
+    const a = src._el;
+    if(q){
+      a.href = href(src, q);
+      a.setAttribute("aria-disabled","false");
+    }else{
+      a.removeAttribute("href");
+      a.setAttribute("aria-disabled","true");
+    }
+  });
+  statusEl.textContent = q
+    ? `Haku: "${q}" — klikkaa rivi avataksesi.`
+    : "Valitse rivit, joihin haku osuu.";
+}
+
+function go(){
+  const q = qEl.value.trim();
+  refresh();
+  if(q) copy(q);
+  qEl.focus();
+}
+
+qEl.addEventListener("input", refresh);
+qEl.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+document.getElementById("go").addEventListener("click", go);
+document.getElementById("copy").addEventListener("click", ()=>{
+  const q = qEl.value.trim();
+  copy(q);
+  statusEl.textContent = q ? `Kopioitu: "${q}"` : "Kirjoita ensin hakusana.";
+});
+document.getElementById("openAll").addEventListener("click", ()=>{
+  const q = qEl.value.trim();
+  if(!q){ statusEl.textContent = "Kirjoita ensin hakusana."; return; }
+  copy(q);
+  let opened = 0;
+  SOURCES.forEach(src=>{
+    if(src._el.querySelector(".chk").checked){
+      window.open(href(src,q), "_blank", "noopener");
+      opened++;
+    }
+  });
+  statusEl.textContent = opened
+    ? `Avattiin ${opened} välilehteä. Jos jokin estyi, salli ponnahdusikkunat.`
+    : "Valitse vähintään yksi rivi.";
+});
+
+refresh();
+qEl.focus();
+</script>
+</body>
+</html>
